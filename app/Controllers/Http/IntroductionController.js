@@ -10,9 +10,8 @@ class IntroductionController {
 
   async create ({request, response}) {
     const payload = request.only(['title', 'body'])
-    console.log(payload)
-    await Introduction.create(payload)
-    return response.status(201).send()
+    const introduction = await Introduction.create(payload)
+    return response.created(introduction)
   }
 
   async show ({params, response}) {

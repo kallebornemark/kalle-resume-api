@@ -25,7 +25,9 @@ Route.group(() => {
   // Introduction
   Route.get('introductions', 'IntroductionController.index')
   Route.get('introductions/:id', 'IntroductionController.show')
-  Route.post('introductions', 'IntroductionController.create').middleware('auth')
+  Route.post('introductions', 'IntroductionController.create')
+    .validator('CreateIntroduction')
+    .middleware('auth')
   Route.put('introductions/:id', 'IntroductionController.update').middleware('auth')
 
   // Sections
