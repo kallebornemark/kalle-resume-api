@@ -32,7 +32,9 @@ Route.group(() => {
 
   // Sections
   Route.get('sections', 'SectionController.index')
-  Route.post('sections', 'SectionController.create').middleware('auth')
+  Route.post('sections', 'SectionController.create')
+    .validator('CreateSection')
+    .middleware('auth')
 
   // Section rows
   Route.get('sectionRows/:id', 'SectionRowController.show')

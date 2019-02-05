@@ -14,8 +14,8 @@ class SectionController {
   async create ({request, response}) {
     const sectionData = request.only(['name'])
 
-    await Section.create(sectionData)
-    return response.status(201).send()
+    const section = await Section.create(sectionData)
+    return response.created(section)
   }
 }
 

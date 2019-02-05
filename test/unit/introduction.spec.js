@@ -12,7 +12,7 @@ before(async () => {
 })
 
 trait(suite => {
-  suite.Context.macro('createIntroduction', async (client, user) => {
+  suite.Context.macro('createIntroduction', async (client) => {
     const { title, body } = await Factory.model('App/Models/Introduction').make()
 
     return await client

@@ -28,3 +28,9 @@ Factory.blueprint('App/Models/Introduction', (faker) => {
     body: faker.paragraph({ sentences: 3 }),
   }
 })
+
+Factory.blueprint('App/Models/Section', (faker) => {
+  return {
+    name: faker.sentence({ words: 3 }),
+  }
+})
