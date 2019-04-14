@@ -3,6 +3,7 @@ const { before, trait, test } = use('Test/Suite')('Section');
 
 trait('Test/ApiClient');
 trait('Auth/Client');
+trait('DatabaseTransactions');
 
 let user;
 before(async () => {
@@ -10,7 +11,7 @@ before(async () => {
 });
 
 trait(suite => {
-  suite.Context.macro('createSection', async client => {
+  suite.Context.macro('postCreateSection', async client => {
     const { name } = await Factory.model('App/Models/Section').make();
 
     return client
@@ -23,9 +24,9 @@ trait(suite => {
 
 test('can create a section if authenticated', async ({
   client,
-  createSection,
+  postCreateSection,
 }) => {
-  const response = await createSection(client);
+  const response = await postCreateSection(client);
 
   response.assertStatus(201);
   response.assertJSONSubset({ name: response.body.name });
@@ -78,9 +79,12 @@ test('cannot create a section if name is not a string', async ({ client }) => {
   ]);
 });
 
-test('can return all sections', async ({ client, createSection }) => {
-  const sectionA = await createSection(client);
-  const sectionB = await createSection(client);
+test('can return a section with rows', async ({ client }) => {
+  const sectionA = await Factory.model('App/Models/Section').create();
+  const sectionARows = await Factory.model('App/Models/SectionRow').make({
+    sectionId: sectionA.id,
+  });
+  await sectionA.rows().save(sectionARows);
 
   const response = await client
     .get('/api/sections')
@@ -88,5 +92,14 @@ test('can return all sections', async ({ client, createSection }) => {
     .end();
 
   response.assertStatus(200);
-  response.assertJSONSubset([sectionA.body, sectionB.body]);
+  response.assertJSONSubset([
+    {
+      id: sectionA.id,
+      rows: [
+        {
+          id: sectionARows.id,
+        },
+      ],
+    },
+  ]);
 });

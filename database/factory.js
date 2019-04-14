@@ -26,3 +26,16 @@ Factory.blueprint('App/Models/Introduction', faker => ({
 Factory.blueprint('App/Models/Section', faker => ({
   name: faker.sentence({ words: 3 }),
 }));
+
+Factory.blueprint('App/Models/SectionRow', (faker, i, data) => ({
+  category: faker.sentence({ words: 1 }),
+  content: faker.sentence({ words: 3 }),
+  description: faker.sentence({ words: 3 }),
+  timespan: faker.sentence({ words: 2 }),
+  linkLabel: faker.sentence({ words: 1 }),
+  linkURL: faker.url(),
+
+  // Custom data
+  section_id: data.sectionId || 1,
+  order_index: data.order_index || 1,
+}));

@@ -9,6 +9,7 @@ const props = [
   'linkURL',
   'hidden',
   'section_id',
+  'order_index',
 ];
 
 class SectionRowController {
