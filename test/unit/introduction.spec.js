@@ -1,127 +1,135 @@
-'use strict'
+const Factory = use('Factory');
+const { before, trait, test } = use('Test/Suite')('Introduction');
 
-const Factory = use('Factory')
-const { before, trait, test } = use('Test/Suite')('Introduction')
+trait('Test/ApiClient');
+trait('Auth/Client');
 
-trait('Test/ApiClient')
-trait('Auth/Client')
-
-let user
+let user;
 before(async () => {
-  user = await Factory.model('App/Models/User').create()
-})
+  user = await Factory.model('App/Models/User').create();
+});
 
 trait(suite => {
-  suite.Context.macro('createIntroduction', async (client) => {
-    const { title, body } = await Factory.model('App/Models/Introduction').make()
+  suite.Context.macro('createIntroduction', async client => {
+    const { title, body } = await Factory.model(
+      'App/Models/Introduction'
+    ).make();
 
-    return await client
+    return client
       .post('/api/introductions')
       .loginVia(user, 'jwt')
       .send({ title, body })
-      .end()
-  })
-})
+      .end();
+  });
+});
 
 test('can create an introduction if authenticated', async ({ client }) => {
-  const { title, body } = await Factory.model('App/Models/Introduction').make()
+  const { title, body } = await Factory.model('App/Models/Introduction').make();
 
   const response = await client
     .post('/api/introductions')
     .loginVia(user, 'jwt')
     .send({ title, body })
-    .end()
+    .end();
 
-  response.assertStatus(201)
-  response.assertJSONSubset({ title, body })
-})
+  response.assertStatus(201);
+  response.assertJSONSubset({ title, body });
+});
 
-test('cannot create an introduction if not authenticated', async ({ client }) => {
-  const { title, body } = await Factory.model('App/Models/Introduction').make()
+test('cannot create an introduction if not authenticated', async ({
+  client,
+}) => {
+  const { title, body } = await Factory.model('App/Models/Introduction').make();
 
   const response = await client
     .post('/api/introductions')
     .send({ title, body })
-    .end()
+    .end();
 
-  response.assertStatus(401)
-})
+  response.assertStatus(401);
+});
 
 test('cannot create an introduction without a title', async ({ client }) => {
-  const { body } = await Factory.model('App/Models/Introduction').make()
+  const { body } = await Factory.model('App/Models/Introduction').make();
 
   const response = await client
     .post('/api/introductions')
     .loginVia(user, 'jwt')
     .send({ body })
-    .end()
+    .end();
 
-  response.assertStatus(400)
+  response.assertStatus(400);
   response.assertJSONSubset([
     {
       message: 'required validation failed on title',
       field: 'title',
-      validation: 'required'
-    }
-  ])
-})
+      validation: 'required',
+    },
+  ]);
+});
 
-test('cannot create an introduction if title and body are not strings', async ({ client }) => {
+test('cannot create an introduction if title and body are not strings', async ({
+  client,
+}) => {
   const data = {
     title: 123,
-    body: 123
-  }
+    body: 123,
+  };
 
   const response = await client
     .post('/api/introductions')
     .loginVia(user, 'jwt')
     .send(data)
-    .end()
+    .end();
 
-  response.assertStatus(400)
+  response.assertStatus(400);
   response.assertJSONSubset([
     {
       message: 'string validation failed on title',
       field: 'title',
-      validation: 'string'
+      validation: 'string',
     },
     {
       message: 'string validation failed on body',
       field: 'body',
-      validation: 'string'
-    }
-  ])
-})
+      validation: 'string',
+    },
+  ]);
+});
 
-test('can return an introduction', async({ client, createIntroduction }) => {
-  const { body: { id } } = await createIntroduction(client, user)
+test('can return an introduction', async ({ client, createIntroduction }) => {
+  const {
+    body: { id },
+  } = await createIntroduction(client, user);
 
   const introduction = await client
     .get(`/api/introductions/${id}`)
     .loginVia(user, 'jwt')
-    .end()
+    .end();
 
-  introduction.assertStatus(200)
+  introduction.assertStatus(200);
   introduction.assertJSONSubset({
     title: introduction.body.title,
-    body: introduction.body.body
-  })
-})
+    body: introduction.body.body,
+  });
+});
 
-test('can update an introduction', async({ client, createIntroduction }) => {
-  const { body: { id } } = await createIntroduction(client, user)
+test('can update an introduction', async ({ client, createIntroduction }) => {
+  const {
+    body: { id },
+  } = await createIntroduction(client, user);
 
   const updatedData = {
     title: 'new title',
-    body: 'new body'
-  }
+    body: 'new body',
+  };
 
   const introduction = await client
     .put(`/api/introductions/${id}`)
     .loginVia(user, 'jwt')
     .send(updatedData)
-    .end()
+    .end();
 
-  introduction.assertStatus(200)
-  introduction.assertJSONSubset(updatedData)
-})
+  introduction.assertStatus(200);
+  introduction.assertJSONSubset(updatedData);
+});

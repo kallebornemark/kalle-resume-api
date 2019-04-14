@@ -1,0 +1,21 @@
+{
+  "extends": ["wesbos"],
+  "rules": {
+    "no-console": 0,
+    "class-methods-use-this": 0,
+    "global-require": 0,
+    "react/prop-types": 0,
+    "prettier/prettier": [
+      "error",
+      {
+        "trailingComma": "es5",
+        "singleQuote": true,
+        "printWidth": 80,
+        "tabWidth": 2
+      }
+    ]
+  },
+  "globals": {
+    "use": true
+  }
+}
