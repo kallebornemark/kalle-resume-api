@@ -1,0 +1,43 @@
+version: 2
+
+experimental:
+  notify:
+    branches:
+      only:
+        - master
+
+jobs:
+  lint:
+    docker:
+      - image: circleci/node:10.15.3
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-server-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-server
+
+      - run:
+          name: Install npm packages
+          command: |
+            npm ci
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-server-{{ checksum "package.json" }}
+
+      - run:
+          name: Run lint
+          command: |
+            npm run lint
+
+workflows:
+  version: 2
+  test_server:
+    jobs:
+      - lint
