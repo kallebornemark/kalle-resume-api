@@ -1,30 +1,27 @@
-'use strict'
-
-const User = use('App/Models/User')
-const {validate} = use('Validator')
+const User = use('App/Models/User');
 
 class UserController {
-  async register ({request, response}) {
-    const userData = request.only(['username', 'email', 'password'])
-    console.log(userData)
+  async register({ request, response }) {
+    const userData = request.only(['username', 'email', 'password']);
+    console.log(userData);
 
-    await User.create(userData)
-    return response.status(201).send()
+    await User.create(userData);
+    return response.status(201).send();
   }
 
-  async login ({auth, request}) {
-    const {username, password} = request.all()
+  async login({ auth, request }) {
+    const { username, password } = request.all();
 
-    return await auth.attempt(username, password)
+    return auth.attempt(username, password);
   }
 
-  async show ({auth, params}) {
+  async show({ auth, params }) {
     if (auth.user.id !== Number(params.id)) {
-      return `You cannot see someone else's profile`
+      return `You cannot see someone else's profile`;
     }
 
-    return auth.user
+    return auth.user;
   }
 }
 
-module.exports = UserController
+module.exports = UserController;

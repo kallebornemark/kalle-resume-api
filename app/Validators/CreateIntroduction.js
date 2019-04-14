@@ -1,20 +1,18 @@
-'use strict'
-
 class CreateIntroduction {
   get rules() {
     return {
       title: 'required|string',
-      body: 'string'
-    }
+      body: 'string',
+    };
   }
 
   get validateAll() {
-    return true
+    return true;
   }
 
   async fails(errorMessages) {
-    return this.ctx.response.status(400).json(errorMessages)
+    return this.ctx.response.status(400).json(errorMessages);
   }
 }
 
-module.exports = CreateIntroduction
+module.exports = CreateIntroduction;

@@ -1,94 +1,92 @@
-'use strict'
+const Factory = use('Factory');
+const { before, trait, test } = use('Test/Suite')('Section');
 
-const Factory = use('Factory')
-const { before, trait, test } = use('Test/Suite')('Section')
+trait('Test/ApiClient');
+trait('Auth/Client');
 
-trait('Test/ApiClient')
-trait('Auth/Client')
-
-let user
+let user;
 before(async () => {
-  user = await Factory.model('App/Models/User').create()
-})
+  user = await Factory.model('App/Models/User').create();
+});
 
 trait(suite => {
-  suite.Context.macro('createSection', async (client) => {
-    const { name } = await Factory.model('App/Models/Section').make()
+  suite.Context.macro('createSection', async client => {
+    const { name } = await Factory.model('App/Models/Section').make();
 
-    return await client
+    return client
       .post('/api/sections')
       .loginVia(user, 'jwt')
       .send({ name })
-      .end()
-  })
-})
+      .end();
+  });
+});
 
-test('can create a section if authenticated', async ({ client, createSection }) => {
-  const response = await createSection(client)
+test('can create a section if authenticated', async ({
+  client,
+  createSection,
+}) => {
+  const response = await createSection(client);
 
-  response.assertStatus(201)
-  response.assertJSONSubset({ name: response.body.name })
-})
+  response.assertStatus(201);
+  response.assertJSONSubset({ name: response.body.name });
+});
 
 test('cannot create a section if not authenticated', async ({ client }) => {
-  const { name } = await Factory.model('App/Models/Section').make()
+  const { name } = await Factory.model('App/Models/Section').make();
 
   const response = await client
     .post('/api/sections')
     .send({ name })
-    .end()
+    .end();
 
-  response.assertStatus(401)
-})
+  response.assertStatus(401);
+});
 
 test('cannot create a section without a name', async ({ client }) => {
   const response = await client
     .post('/api/sections')
     .loginVia(user, 'jwt')
     .send({})
-    .end()
+    .end();
 
-  response.assertStatus(400)
+  response.assertStatus(400);
   response.assertJSONSubset([
     {
       message: 'required validation failed on name',
       field: 'name',
-      validation: 'required'
-    }
-  ])
-})
+      validation: 'required',
+    },
+  ]);
+});
 
 test('cannot create a section if name is not a string', async ({ client }) => {
-  const data = { name: 123 }
+  const data = { name: 123 };
 
   const response = await client
     .post('/api/sections')
     .loginVia(user, 'jwt')
     .send(data)
-    .end()
+    .end();
 
-  response.assertStatus(400)
+  response.assertStatus(400);
   response.assertJSONSubset([
     {
       message: 'string validation failed on name',
       field: 'name',
-      validation: 'string'
-    }
-  ])
-})
+      validation: 'string',
+    },
+  ]);
+});
 
 test('can return all sections', async ({ client, createSection }) => {
-  const sectionA = await createSection(client)
-  const sectionB = await createSection(client)
+  const sectionA = await createSection(client);
+  const sectionB = await createSection(client);
 
   const response = await client
     .get('/api/sections')
     .loginVia(user, 'jwt')
-    .end()
+    .end();
 
-  response.assertStatus(200)
-  response.assertJSONSubset([
-    sectionA.body,
-    sectionB.body
-  ])
-})
+  response.assertStatus(200);
+  response.assertJSONSubset([sectionA.body, sectionB.body]);
+});
