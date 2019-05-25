@@ -43,6 +43,23 @@ test('cannot create a section if not authenticated', async ({ client }) => {
   response.assertStatus(401);
 });
 
+test('can delete a section if authenticated', async ({ client }) => {
+  const { id } = await Factory.model('App/Models/Section').create();
+  const response = await client
+    .delete(`/api/sections/${id}`)
+    .loginVia(user, 'jwt')
+    .end();
+
+  response.assertStatus(204);
+});
+
+test('cannot delete a section if not authenticated', async ({ client }) => {
+  const { id } = await Factory.model('App/Models/Section').create();
+  const response = await client.delete(`/api/sections/${id}`).end();
+
+  response.assertStatus(401);
+});
+
 test('cannot create a section without a name', async ({ client }) => {
   const response = await client
     .post('/api/sections')
@@ -102,4 +119,32 @@ test('can return a section with rows', async ({ client }) => {
       ],
     },
   ]);
+});
+
+test('can update a section if authenticated', async ({ client }) => {
+  const { id } = await Factory.model('App/Models/Section').create();
+  const newSectionname = 'new section name';
+
+  const response = await client
+    .put(`/api/sections/${id}`)
+    .loginVia(user, 'jwt')
+    .send({ name: newSectionname })
+    .end();
+
+  response.assertStatus(200);
+  response.assertJSONSubset({
+    name: newSectionname,
+  });
+});
+
+test('cannot update a section if not authenticated', async ({ client }) => {
+  const { id } = await Factory.model('App/Models/Section').create();
+  const newSectionname = 'new section name';
+
+  const response = await client
+    .put(`/api/sections/${id}`)
+    .send({ name: newSectionname })
+    .end();
+
+  response.assertStatus(401);
 });

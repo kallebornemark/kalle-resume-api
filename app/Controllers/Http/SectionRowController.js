@@ -36,7 +36,7 @@ class SectionRowController {
     row.merge(payload);
     await row.save();
 
-    return response.status(202).json(row);
+    return response.status(200).json(row);
   }
 
   async destroy({ params, response }) {

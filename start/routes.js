@@ -35,6 +35,8 @@ Route.group(() => {
   Route.post('sections', 'SectionController.create')
     .validator('CreateSection')
     .middleware('auth');
+  Route.put('sections/:id', 'SectionController.update').middleware('auth');
+  Route.delete('sections/:id', 'SectionController.destroy').middleware('auth');
 
   // Section rows
   Route.get('sectionRows/:id', 'SectionRowController.show');

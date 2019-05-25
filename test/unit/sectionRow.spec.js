@@ -19,6 +19,6 @@ test('can update order_index', async ({ client }) => {
     .send({ order_index: 1337 })
     .end();
 
-  response.assertStatus(202);
+  response.assertStatus(200);
   response.assertJSONSubset({ order_index: 1337 });
 });
