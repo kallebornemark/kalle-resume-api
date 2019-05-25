@@ -9,7 +9,8 @@
     "dev": "nodemon --watch app --harmony server.js",
     "test": "node ace test",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "deploy": "git push dokku master"
   },
   "keywords": [
     "adonisjs",
