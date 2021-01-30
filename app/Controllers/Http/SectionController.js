@@ -1,6 +1,6 @@
 const Section = use('App/Models/Section');
 
-const props = ['name'];
+const props = ['name', 'hidden'];
 
 class SectionController {
   async index({ response }) {
